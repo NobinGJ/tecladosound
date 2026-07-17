@@ -165,6 +165,87 @@ def abrir_gui():
     tray_icon = None
     perfil_seleccionado = None
 
+    # Raw input (game support)
+    import ctypes, queue
+    from ctypes import wintypes
+    raw_queue = queue.Queue()
+    raw_hwnd = None
+    raw_run = False
+    RAW_KEY_DOWN = set()
+
+    class RAWINPUTDEVICE(ctypes.Structure):
+        _fields_ = [("usUsagePage", wintypes.USHORT), ("usUsage", wintypes.USHORT),
+                    ("dwFlags", wintypes.DWORD), ("hwndTarget", wintypes.HWND)]
+
+    class RAWINPUTHEADER(ctypes.Structure):
+        _fields_ = [("dwType", wintypes.DWORD), ("dwSize", wintypes.DWORD),
+                    ("hDevice", wintypes.HANDLE), ("wParam", wintypes.WPARAM)]
+
+    class RAWKEYBOARD(ctypes.Structure):
+        _fields_ = [("MakeCode", wintypes.USHORT), ("Flags", wintypes.USHORT),
+                    ("Reserved", wintypes.USHORT), ("VKey", wintypes.USHORT),
+                    ("Message", wintypes.UINT), ("ExtraInformation", wintypes.ULONG)]
+
+    class RAWINPUT(ctypes.Structure):
+        _fields_ = [("header", RAWINPUTHEADER), ("keyboard", RAWKEYBOARD)]
+
+    def _vk_to_pynput(vk):
+        from pynput.keyboard import Key, KeyCode
+        s = {
+            0x08: Key.backspace, 0x09: Key.tab, 0x0D: Key.enter, 0x1B: Key.esc,
+            0x20: Key.space, 0x24: Key.home, 0x23: Key.end, 0x21: Key.page_up,
+            0x22: Key.page_down, 0x25: Key.left, 0x26: Key.up, 0x27: Key.right,
+            0x28: Key.down, 0x2D: Key.insert, 0x2E: Key.delete, 0x14: Key.caps_lock,
+            0x2C: Key.print_screen, 0x13: Key.pause, 0x70: Key.f1, 0x71: Key.f2,
+            0x72: Key.f3, 0x73: Key.f4, 0x74: Key.f5, 0x75: Key.f6, 0x76: Key.f7,
+            0x77: Key.f8, 0x78: Key.f9, 0x79: Key.f10, 0x7A: Key.f11, 0x7B: Key.f12,
+            0xA0: Key.shift_l, 0xA1: Key.shift_r, 0xA2: Key.ctrl_l, 0xA3: Key.ctrl_r,
+            0xA4: Key.alt_l, 0xA5: Key.alt_r, 0x5B: Key.cmd, 0x5C: Key.cmd_r,
+        }
+        if vk in s: return s[vk]
+        if 0x41 <= vk <= 0x5A: return KeyCode.from_char(chr(0x61 + vk - 0x41))
+        if 0x30 <= vk <= 0x39: return KeyCode.from_char(chr(0x30 + vk - 0x30))
+        return KeyCode(vk=vk)
+
+    def _raw_thread():
+        nonlocal raw_hwnd
+        WNDPROC = ctypes.WINFUNCTYPE(wintypes.LRESULT, wintypes.HWND,
+                                     wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM)
+        def proc(h, m, wp, lp):
+            if m == 0x00FF:
+                sz = wintypes.UINT(0)
+                ctypes.windll.user32.GetRawInputData(lp, 0x10000003, None,
+                    ctypes.byref(sz), ctypes.sizeof(RAWINPUTHEADER))
+                buf = ctypes.create_string_buffer(sz.value)
+                ctypes.windll.user32.GetRawInputData(lp, 0x10000003, buf,
+                    ctypes.byref(sz), ctypes.sizeof(RAWINPUTHEADER))
+                ri = ctypes.cast(buf, ctypes.POINTER(RAWINPUT)).contents
+                if ri.header.dwType == 1:
+                    vk = ri.keyboard.VKey
+                    msg = ri.keyboard.Message
+                    if msg in (0x0100, 0x0104):
+                        raw_queue.put(('down', vk))
+                    elif msg in (0x0101, 0x0105):
+                        raw_queue.put(('up', vk))
+            return ctypes.windll.user32.DefWindowProcW(h, m, wp, lp)
+        hi = ctypes.windll.kernel32.GetModuleHandleW(None)
+        cls = wintypes.WNDCLASSEXW()
+        cls.cbSize = ctypes.sizeof(cls)
+        cls.lpfnWndProc = WNDPROC(proc)
+        cls.hInstance = hi
+        cls.lpszClassName = "TSRaw"
+        ctypes.windll.user32.RegisterClassExW(ctypes.byref(cls))
+        raw_hwnd = ctypes.windll.user32.CreateWindowExW(0, "TSRaw", None, 0,
+            0, 0, 0, 0, wintypes.HWND(-3), None, hi, None)
+        rid = RAWINPUTDEVICE(0x01, 0x06, 0x00000100, raw_hwnd)
+        ctypes.windll.user32.RegisterRawInputDevices(ctypes.byref(rid), 1, ctypes.sizeof(rid))
+        msg = wintypes.MSG()
+        while raw_run:
+            r = ctypes.windll.user32.GetMessageW(ctypes.byref(msg), None, 0, 0)
+            if r <= 0: break
+            ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
+            ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+
     C = {
         "base": "#1a1b26", "surface": "#24252f", "overlay": "#2f3040",
         "text": "#c0caf5", "sub": "#565f89", "accent": "#7aa2f7",
@@ -498,6 +579,9 @@ def abrir_gui():
 
         def on_press(key):
             try:
+                if key in RAW_KEY_DOWN:
+                    return
+                RAW_KEY_DOWN.add(key)
                 s = motor.obtener_sonido(key)
                 if s:
                     s.set_volume(slider_vol.get() / 100.0)
@@ -505,8 +589,18 @@ def abrir_gui():
             except Exception:
                 pass
 
-        listener_obj = Listener(on_press=on_press)
+        def on_release(key):
+            try:
+                RAW_KEY_DOWN.discard(key)
+            except Exception:
+                pass
+
+        listener_obj = Listener(on_press=on_press, on_release=on_release)
         listener_obj.start()
+        if not raw_run:
+            raw_run = True
+            threading.Thread(target=_raw_thread, daemon=True).start()
+        RAW_KEY_DOWN.clear()
         activo = True
         lbl_estado.configure(text=f"Activo  \u2022  {motor.nombre}", text_color=C["green"])
         btn_toggle.configure(text="Detener", fg_color=C["red"], hover_color="#e06a8a")
@@ -529,12 +623,41 @@ def abrir_gui():
             except Exception:
                 pass
             motor = None
+        RAW_KEY_DOWN.clear()
         activo = False
         lbl_estado.configure(text="Detenido", text_color=C["sub"])
         btn_toggle.configure(text="Iniciar", fg_color=C["green"], hover_color="#8bc86a")
         slider_vol.configure(state="normal")
         for b in profile_buttons:
             b.configure(state="normal")
+
+    def _play_raw_key(vk):
+        try:
+            key = _vk_to_pynput(vk)
+            if key in RAW_KEY_DOWN:
+                return
+            RAW_KEY_DOWN.add(key)
+            s = motor.obtener_sonido(key)
+            if s:
+                s.set_volume(slider_vol.get() / 100.0)
+                s.play()
+        except Exception:
+            pass
+
+    def _poll_raw():
+        if not raw_run:
+            root.after(15, _poll_raw)
+            return
+        try:
+            while True:
+                ev, vk = raw_queue.get_nowait()
+                if ev == 'down':
+                    _play_raw_key(vk)
+                else:
+                    RAW_KEY_DOWN.discard(_vk_to_pynput(vk))
+        except queue.Empty:
+            pass
+        root.after(15, _poll_raw)
 
     def toggle_motor():
         if activo:
@@ -576,6 +699,8 @@ def abrir_gui():
         root.withdraw()
 
     root.protocol("WM_DELETE_WINDOW", on_cerrar)
+
+    root.after(200, _poll_raw)
 
     if config.get("auto_start_motor"):
         root.after(500, toggle_motor)

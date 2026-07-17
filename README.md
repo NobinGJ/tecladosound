@@ -1,57 +1,79 @@
 # TecladoSounds
 
-Simulador ligero de sonidos de teclado mecánico. Elige entre múltiples perfiles ( switches ) y escucha el sonido de cada tecla mientras escribes.
+> **EN:** Lightweight mechanical keyboard sound simulator. Pick a switch profile and hear every keystroke.
+> **ES:** Simulador ligero de sonidos de teclado mecánico. Elige un perfil y escucha cada tecla mientras escribes.
 
 ![TecladoSounds](Logo.png)
 
-## Características
+---
 
-- **17+ perfiles** de switches mecánicos y teclados reales (MX Blue, MX Brown, Holy Panda, Alpaca, etc.)
-- **Interfaz gráfica moderna** con modo oscuro
-- **Icono en bandeja del sistema** para acceso rápido
-- **Cambio de perfil en tiempo real** sin detener la reproducción
-- **Control de volumen** desde la interfaz
-- **Inicio automático** con Windows (opcional)
-- **Inicio automático de sonido** al abrir la aplicación (opcional)
-- **Sin dependencias externas** en la versión compilada
+## Features / Características
 
-## Descarga
+- **17+ profiles** of real mechanical switches (MX Blue, Brown, Holy Panda, Alpaca, NK Cream, etc.)
+- **17+ perfiles** de switches mecánicos reales
+- **Real-time switching** — change profiles without stopping the sound
+- **Cambio en vivo** — cambia de perfil sin detener el sonido
+- **System tray** — minimizes to tray when closed
+- **Bandeja del sistema** — se minimiza al cerrar la ventana
+- **Dark mode** UI
+- **Modo oscuro** integrado
+- **Auto-start** with Windows & auto-start sound (optional)
+- **Inicio automático** con Windows y del sonido (opcional)
+- **Portable** — no dependencies required in compiled version
+- **Portátil** — sin dependencias en la versión compilada
 
-### Versión compilada (recomendada)
-Descarga el archivo `dist/TecladoSounds.exe`, cópialo a cualquier carpeta y ejecútalo.
+---
 
-### Desde código fuente
-```
+## Download / Descarga
+
+### Compiled (recommended) / Compilado (recomendado)
+
+Download the latest release from [GitHub Releases](https://github.com/NobinGJ/tecladosound/releases). Just run `TecladoSounds.exe`.
+
+Descarga la última versión desde [GitHub Releases](https://github.com/NobinGJ/tecladosound/releases). Solo ejecuta `TecladoSounds.exe`.
+
+### From source / Desde código fuente
+
+```bash
 git clone https://github.com/NobinGJ/tecladosound.git
 cd tecladosound
 pip install -r requirements.txt
 python tecla.pyw
 ```
 
-## Compilación
-
-Para compilar tu propio ejecutable desde el código fuente:
+### Build your own .exe / Compilar tu propio .exe
 
 ```bash
 pip install pyinstaller
 pyinstaller --onefile --name TecladoSounds --noconsole --icon Logo.png --add-data "Logo.png;." --add-data "keyboardsounds\profiles;keyboardsounds\profiles" tecla.pyw
 ```
 
-El ejecutable se generará en `dist/TecladoSounds.exe`.
+Output: `dist/TecladoSounds.exe`
 
-## Requisitos para desarrollo
+---
 
+## How to use / Cómo usar
+
+1. Run `TecladoSounds.exe` (or `python tecla.pyw`)
+2. Select a profile from the left panel
+3. Click **Iniciar / Start**
+4. Type anywhere — you'll hear the switch sound
+5. Change profiles anytime without stopping
+6. Adjust volume with the slider
+
+### System tray / Bandeja del sistema
+- Closing the window minimizes to tray
+- Right-click the tray icon: **Open / Abrir**, **Settings / Ajustes**, **Close / Cerrar**
+
+---
+
+## Development / Desarrollo
+
+### Requirements / Requisitos
 - **Python 3.12+**
-- Dependencias (ver `requirements.txt`):
-  - `customtkinter`
-  - `pygame`
-  - `pynput`
-  - `pystray`
-  - `Pillow`
-  - `PyYAML`
-  - `pyinstaller` (solo para compilar)
+- Dependencies: `customtkinter`, `pygame`, `pynput`, `pystray`, `Pillow`, `PyYAML`
 
-### Instalación del entorno
+### Setup / Instalación del entorno
 
 ```bash
 python -m venv venv
@@ -59,58 +81,50 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-## Uso
+---
 
-1. Ejecuta `TecladoSounds.exe` (o `python tecla.pyw`)
-2. Selecciona un perfil de la lista izquierda
-3. Presiona **Iniciar**
-4. Escribe en cualquier programa — escucharás el sonido del switch seleccionado
-5. Cambia de perfil en cualquier momento sin detener el sonido
-6. Usa el deslizador de volumen para ajustar la intensidad
+## Adding a custom profile / Añadir un perfil personalizado
 
-### Bandeja del sistema
-- Al cerrar la ventana, la aplicación se minimiza a la bandeja
-- Haz clic derecho en el icono para Abrir / Ajustes / Cerrar
-
-## Añadir un perfil personalizado
-
-1. Crea una carpeta en `keyboardsounds/profiles/mi-perfil/`
-2. Agrega tus archivos de audio (`.wav` o `.ogg`)
-3. Crea un archivo `profile.yaml` con la configuración:
+1. Create a folder in `keyboardsounds/profiles/my-profile/`
+2. Add your audio files (`.wav` or `.ogg`)
+3. Create a `profile.yaml`:
 
 ```yaml
 profile:
-  name: "Mi Switch"
-  author: "Tu Nombre"
-  description: "Descripción del sonido"
+  name: "My Switch"
+  author: "Your Name"
+  description: "Sound description"
   device: keyboard
 
 sources:
   - id: default
-    source: tecla.wav
+    source: key.wav
 
 keys:
   default: [default]
 ```
 
-## Estructura del proyecto
+---
+
+## Project structure / Estructura del proyecto
 
 ```
 tecladosound/
-├── dist/
-│   └── TecladoSounds.exe    # Versión compilada
+├── dist/                  # Compiled .exe
 ├── keyboardsounds/
-│   └── profiles/             # Perfiles de sonido
-├── docs/                     # Sitio web (GitHub Pages)
-│   ├── index.html
-│   └── _config.yml
-├── tecla.pyw                 # Aplicación principal
-├── Logo.png                  # Logotipo
-├── config.json               # Configuración (se genera solo)
+│   └── profiles/          # Sound profiles
+├── docs/                  # GitHub Pages website
+├── tecla.pyw              # Main application
+├── Logo.png               # App logo
+├── config.json            # Auto-generated config
 ├── requirements.txt
 └── README.md
 ```
 
-## Licencia
+---
 
-Este proyecto incluye perfiles de sonido basados en [keyboardsounds](https://github.com/keyboardsounds/keyboardsounds) y otros. Cada perfil puede tener su propia licencia.
+## License / Licencia
+
+This project includes sound profiles based on [keyboardsounds](https://github.com/keyboardsounds/keyboardsounds) and other sources. Each profile may have its own license.
+
+Este proyecto incluye perfiles de sonido basados en [keyboardsounds](https://github.com/keyboardsounds/keyboardsounds) y otras fuentes. Cada perfil puede tener su propia licencia.

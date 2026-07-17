@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,9 +24,34 @@
   }
   .container { max-width: 720px; width: 100%; padding: 48px 24px; }
 
-  .hero { text-align: center; padding: 40px 0 32px; }
+  .hero { text-align: center; padding: 40px 0 24px; }
   .hero h1 { font-size: 3rem; font-weight: 800; color: var(--accent); letter-spacing: -1px; }
   .hero .sub { font-size: 1.1rem; color: var(--sub); margin-top: 6px; }
+
+  .lang-toggle {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .lang-toggle button {
+    background: var(--surface);
+    color: var(--sub);
+    border: none;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: .85rem;
+    cursor: pointer;
+    margin: 0 4px;
+    transition: .2s;
+  }
+  .lang-toggle button.active {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 600;
+  }
+  .lang-toggle button:hover { filter: brightness(1.15); }
+
+  [lang] { display: none; }
+  [lang].active { display: block; }
 
   .download-card {
     background: var(--surface);
@@ -81,28 +106,61 @@
 
   <div class="hero">
     <h1>⌨ TecladoSounds</h1>
-    <p class="sub">Simulador ligero de sonidos de teclado mecánico</p>
+    <p class="sub">Lightweight mechanical keyboard sound simulator</p>
   </div>
 
-  <div class="download-card">
-    <a class="btn" href="https://github.com/NobinGJ/tecladosound/releases/download/v1.0/TecladoSounds.exe" download>
-      Descargar TecladoSounds.exe
-      <small>~26 MB · Windows · Portable</small>
-    </a>
+  <div class="lang-toggle">
+    <button id="btn-en" class="active" onclick="setLang('en')">🇬🇧 English</button>
+    <button id="btn-es" onclick="setLang('es')">🇪🇸 Español</button>
   </div>
 
-  <div class="screenshot">
-    <img src="screenshot/captura1.png" alt="Captura de TecladoSounds">
+  <!-- English -->
+  <div lang="en" class="active">
+    <div class="download-card">
+      <a class="btn" href="https://github.com/NobinGJ/tecladosound/releases/download/v1.0/TecladoSounds.exe" download>
+        Download TecladoSounds.exe
+        <small>~26 MB &middot; Windows &middot; Portable</small>
+      </a>
+    </div>
+
+    <div class="screenshot">
+      <img src="screenshot/captura1.png" alt="TecladoSounds screenshot">
+    </div>
+
+    <div class="features">
+      <div class="grid">
+        <div class="card"><h3>🎧 17+ Profiles</h3><p>Real switches: MX Blue, Brown, Holy Panda, NK Cream & more</p></div>
+        <div class="card"><h3>🔄 Live switch</h3><p>Change profiles without stopping the sound</p></div>
+        <div class="card"><h3>🌙 Dark mode</h3><p>Modern dark UI built-in</p></div>
+        <div class="card"><h3>🖥️ System tray</h3><p>Minimizes to tray, quick access always</p></div>
+        <div class="card"><h3>⚡ Lightweight</h3><p>26 MB, no install required, just run</p></div>
+        <div class="card"><h3>🔧 Customizable</h3><p>Add your own profiles easily</p></div>
+      </div>
+    </div>
   </div>
 
-  <div class="features">
-    <div class="grid">
-      <div class="card"><h3>🎧 17+ Perfiles</h3><p>Switches reales: MX Blue, Brown, Holy Panda y más</p></div>
-      <div class="card"><h3>🔄 Cambio en vivo</h3><p>Selecciona otro perfil sin detener el sonido</p></div>
-      <div class="card"><h3>🌙 Modo oscuro</h3><p>Interfaz moderna con tema oscuro integrado</p></div>
-      <div class="card"><h3>🖥️ Bandeja</h3><p>Se minimiza al cerrar, acceso rápido siempre</p></div>
-      <div class="card"><h3>⚡ Ligero</h3><p>26 MB, sin instalación, solo ejecutar</p></div>
-      <div class="card"><h3>🔧 Personalizable</h3><p>Añade tus propios perfiles fácilmente</p></div>
+  <!-- Spanish -->
+  <div lang="es">
+    <div class="download-card">
+      <a class="btn" href="https://github.com/NobinGJ/tecladosound/releases/download/v1.0/TecladoSounds.exe" download>
+        Descargar TecladoSounds.exe
+        <small>~26 MB &middot; Windows &middot; Portable</small>
+      </a>
+    </div>
+
+    <div class="screenshot">
+      <img src="screenshot/captura1.png" alt="Captura de TecladoSounds">
+    </div>
+
+    <div class="features">
+      <div class="grid">
+        <div class="card"><h3>🎧 17+ Perfiles</h3><p>Switches reales: MX Blue, Brown, Holy Panda y más</p></div>
+        <div class="card"><h3>🔄 Cambio en vivo</h3><p>Cambia de perfil sin detener el sonido</p></div>
+        <div class="card"><h3>🌙 Modo oscuro</h3><p>Interfaz oscura moderna integrada</p></div>
+        <div class="card"><h3>🖥️ Bandeja</h3><p>Se minimiza al cerrar, acceso rápido</p></div>
+        <div class="card"><h3>⚡ Ligero</h3><p>26 MB, sin instalación, solo ejecutar</p></div>
+        <div class="card"><h3>🔧 Personalizable</h3><p>Añade tus propios perfiles</p></div>
+      </div>
     </div>
   </div>
 
@@ -111,5 +169,14 @@
   </footer>
 
 </div>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('[lang]').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll(`[lang="${lang}"]`).forEach(el => el.classList.add('active'));
+  document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + lang).classList.add('active');
+}
+</script>
 </body>
 </html>

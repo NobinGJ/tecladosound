@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TecladoSounds</title>
+<style>
+  :root {
+    --bg: #1a1b26;
+    --surface: #24252f;
+    --overlay: #2f3040;
+    --text: #c0caf5;
+    --sub: #565f89;
+    --accent: #7aa2f7;
+    --green: #9ece6a;
+    --red: #f7768e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container { max-width: 780px; width: 100%; padding: 40px 24px; }
+
+  /* Header */
+  .hero {
+    text-align: center;
+    padding: 60px 0 40px;
+  }
+  .hero h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -1px;
+  }
+  .hero .sub {
+    font-size: 1.15rem;
+    color: var(--sub);
+    margin-top: 8px;
+  }
+
+  /* Download */
+  .download-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 36px;
+    text-align: center;
+    margin: 32px 0;
+  }
+  .btn-download {
+    display: inline-block;
+    background: var(--green);
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding: 16px 48px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: .2s;
+  }
+  .btn-download:hover { filter: brightness(1.1); transform: translateY(-2px); }
+  .btn-download small { display: block; font-weight: 400; font-size: .8rem; opacity: .7; margin-top: 4px; }
+  .version-info { color: var(--sub); font-size: .85rem; margin-top: 12px; }
+
+  /* Features */
+  .features { margin: 40px 0; }
+  .features h2 {
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .feature-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .feature-card h3 { color: var(--accent); font-size: 1rem; margin-bottom: 4px; }
+  .feature-card p { color: var(--sub); font-size: .9rem; }
+
+  /* Screenshot */
+  .screenshot {
+    margin: 40px 0;
+    text-align: center;
+  }
+  .screenshot img {
+    max-width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--overlay);
+  }
+  .screenshot .placeholder {
+    background: var(--surface);
+    border: 2px dashed var(--overlay);
+    border-radius: 12px;
+    padding: 60px 20px;
+    color: var(--sub);
+    font-size: .9rem;
+  }
+
+  /* Code */
+  pre {
+    background: var(--surface);
+    padding: 16px 20px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: .85rem;
+    color: var(--text);
+    border: 1px solid var(--overlay);
+    margin: 12px 0;
+  }
+  code { font-family: 'Cascadia Code', 'Fira Code', monospace; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 40px 0 20px;
+    color: var(--sub);
+    font-size: .85rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  .section-title {
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin: 40px 0 16px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <h1>⌨ TecladoSounds</h1>
+    <p class="sub">Simulador ligero de sonidos de teclado mecánico</p>
+  </div>
+
+  <div class="download-card">
+      <a class="btn-download" href="https://github.com/NobinGJ/tecladosound/raw/main/dist/TecladoSounds.exe" download>
+      Descargar TecladoSounds.exe
+      <small>~26 MB &middot; Windows &middot; Sin instalación</small>
+    </a>
+    <p class="version-info">v1.0 &mdash; Portable, solo ejecutar</p>
+  </div>
+
+  <div class="features">
+    <h2>Características</h2>
+    <div class="grid">
+      <div class="feature-card">
+        <h3>🎧 17+ Perfiles</h3>
+        <p>Switches reales: MX Blue, Brown, Holy Panda, Alpaca y más</p>
+      </div>
+      <div class="feature-card">
+        <h3>🔄 Cambio en vivo</h3>
+        <p>Selecciona otro perfil sin detener el sonido</p>
+      </div>
+      <div class="feature-card">
+        <h3>🌙 Modo oscuro</h3>
+        <p>Interfaz moderna con tema oscuro integrado</p>
+      </div>
+      <div class="feature-card">
+        <h3>🖥️ Bandeja del sistema</h3>
+        <p>Se minimiza al cerrar, acceso rápido siempre</p>
+      </div>
+      <div class="feature-card">
+        <h3>⚡ Ligero</h3>
+        <p>Sin dependencias externas, ~5 MB en disco</p>
+      </div>
+      <div class="feature-card">
+        <h3>🔧 Personalizable</h3>
+        <p>Añade tus propios perfiles de sonido fácilmente</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">📸 Captura</h2>
+  <div class="screenshot">
+    <div class="placeholder">
+      Agrega aquí una captura de pantalla de la aplicación<br>
+      <small>(reemplaza este div por un <code>&lt;img&gt;</code>)</small>
+    </div>
+  </div>
+
+  <h2 class="section-title">📖 Guía rápida</h2>
+  <ol style="color: var(--sub); margin-left: 20px; line-height: 2;">
+    <li>Descarga y ejecuta <strong>TecladoSounds.exe</strong></li>
+    <li>Selecciona un perfil de la lista izquierda</li>
+    <li>Presiona <strong>Iniciar</strong></li>
+    <li>Escribe en cualquier programa y escucha el sonido</li>
+    <li>Cambia de perfil en cualquier momento</li>
+  </ol>
+
+  <h2 class="section-title">🔧 Compilar desde código</h2>
+  <pre><code>git clone https://github.com/TU_USUARIO/tecladosound.git
+cd tecladosound
+pip install -r requirements.txt
+python tecla.pyw</code></pre>
+
+  <p style="color: var(--sub);">Para compilar tu propio .exe:</p>
+  <pre><code>pip install pyinstaller
+pyinstaller --onefile --name TecladoSounds --noconsole --icon Logo.png --add-data "Logo.png;." --add-data "keyboardsounds\profiles;keyboardsounds\profiles" tecla.pyw</code></pre>
+
+  <footer>
+    <p>
+      <a href="https://github.com/NobinGJ/tecladosound">GitHub</a>
+      &middot;
+      <a href="../README.md">README</a>
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>

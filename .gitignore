@@ -1,0 +1,7 @@
+config.json
+*.spec
+build/
+__pycache__/
+*.pyc
+*.pyo
+*.lnk
